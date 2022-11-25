@@ -1,0 +1,63 @@
+Simple DevOps E2E Project
+
+- Jenkins --> is a glue in the project; java based application itself. It is used for automated build and CI/CD.
+- Spin up ec2 and configure as a Jenkins Server
+- Connect to ec2 (ssh -i ~/<Path of key.pem> ec2-user@PublicIPv4)
+- sudo su - --> root
+- run hostname to visualize it and vim /etc/hostname to update its name such as jenkins-server
+- run reboot and reconnect again to restart the machine
+- install java for ec2 amazon-linux with the command
+        - yum update –y
+        - wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        - rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        - yum upgrade
+        - amazon-linux-extras install java-openjdk11 -y
+        - amazon-linux-extras install epel   ----> Extra packages enterprise linux
+        - yum install jenkins -y   ---> install jenkins
+        - systemctl enable jenkins   ---> enable the Jenkins service to start at boot
+        - systemctl start jenkins    ---> start Jenkins as a service
+        - systemctl status jenkins    ---> check the status of the Jenkins service
+
+- After all is done, we can open the browser and go to <Public IP>:8080 then the page will not be opening because 
+    we have not configured the security groups inbound rules (we need to add 8080 into inbound rules)
+- Now, the page is running now but need to Unlocked the Jenkins:
+        - In the terminal, run cat /var/lib/jenkins/secrets/initialAdminPassword
+        - Then it returns the initialAdminPassword and paste the password in jenkins browser
+
+As a DevOps engineer, we need to take Java code from GitHub repo, build war/jar build artifacts and 
+    deploy to Target Serves (EC2)
+        - Steps for solution:
+            - Configure Maven in Jenkins, Maven is a build management tool    
+            - GO to maven download, copy the tar.gz binary file link
+            - Go to operation directory with cd /opt 
+            - And run wget <the tar.gz binary file link> --> the link is https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+            - wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+            - run ll and see the archived tar file and we need to unarchive it
+            - To unarchive(untar) it, run ```tar -xzvf apache-maven-3.8.6-bin.tar.gz```
+            - run ll again to verify the unarchived file
+            - then remove the archived file; no need it anymore
+            - then move the unarchived file into the maven folder which we create --> mv apache-maven-3.8.6/ maven
+            - cd ~ 
+            - vim .bash_profile
+                    # User specific environment and startup programs
+                    JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.16.0.8-1.amzn2.0.1.x86_64
+                    M2_HOME=/opt/maven
+                    M2=$M2_HOME/bin
+                    PATH=$PATH:$HOME/bin:$JAVA_HOME:$M2_HOME:$M2
+                By configuring .bash_profile and exporting M2_HOME, M2, and JAVA_HOME --> commands can be executed from everywhere otherwise we need to type absolute path 
+            - source .bash_profile
+
+- Jenkins GUI --> Manage Jenkins --> Manage Plugins --> Maven Integration --> Install without restart
+- Make sure that git installed in the machine. If not, ```yum install git -y```
+- For the configuration, we need to add github link, and credentials for the private repos
+- Goals and options under Build --> clean install (each time job runs, it clean the cache/memory)
+- In Jenkins, VM jobs are stored under /var/lib/jenkins/workspace
+
+            
+
+
+
+
+
+Resources:
+- https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
