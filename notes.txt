@@ -53,6 +53,22 @@ As a DevOps engineer, we need to take Java code from GitHub repo, build war/jar 
 - Goals and options under Build --> clean install (each time job runs, it clean the cache/memory)
 - In Jenkins, VM jobs are stored under /var/lib/jenkins/workspace
 
+
+TOMCAT:
+- We do same process for tomcat as we have already done for jenkins
+        - create ec2 and verify connectivity
+        - sudo su - 
+        - vim /etc/hostname and update the server name like tomcat-server
+        - reboot and re-Connect
+        - cd /opt and run wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.69/bin/apache-tomcat-9.0.69.tar.gz
+        - then remove the tar file and create tomcat folder and move the untar file 
+        - install java 11
+        - in the /opt/tomcat/bin, we have ./startup.sh and ./shutdown.sh 
+        - After running ./startup, go to the browser <Public IP of tomcat server>:8080
+        - Then make sure that tomcat is come up and it means tomcat configured correctly
+        - Then go to Manager App in the tomcat website and verify 403 access denied which is expected
+        - run ```find / -name context.xml```
+        - 
             
 
 
