@@ -67,8 +67,39 @@ TOMCAT:
         - After running ./startup, go to the browser <Public IP of tomcat server>:8080
         - Then make sure that tomcat is come up and it means tomcat configured correctly
         - Then go to Manager App in the tomcat website and verify 403 access denied which is expected
-        - run ```find / -name context.xml```
-        - 
+        - change directory to tomcat and execute ```find / -name context.xml```
+        - Then 2 important context.xml files will be displayed that need to be updated
+                - /opt/tomcat/webapps/host-manager/META-INF/context.xml
+                - /opt/tomcat/webapps/manager/META-INF/context.xml
+        - Execute ```vim /opt/tomcat/webapps/host-manager/META-INF/context.xml``` and ```vim /opt/tomcat/webapps/manager/META-INF/context.xml```
+            and comment lines for local host(127....) --> (local host line starts with <Valve ...)
+        - Then change directory to bin folder and execute ```./shutdown.sh```
+        - Then execute ```./startup.sh``` to restart
+        - Go to tomcat website and refresh the page and make sure it requires credentials to sign in
+        - Now we need to configure tomcat username and password
+        - Then change directory to ```tomcat/conf``` to configure the credentials
+        - Once you execute ```ll```, you will be able to see tomcat-users.xml file
+        - Execute ```vim tomcat-users.xml```
+                    <!--
+                    <role rolename="tomcat"/>
+                    <role rolename="role1"/>
+                    <user username="tomcat" password="<must-be-changed>" roles="tomcat"/>
+                    <user username="both" password="<must-be-changed>" roles="tomcat,role1"/>
+                    <user username="role1" password="<must-be-changed>" roles="role1"/>
+                    -->
+        - Update it above with
+                     <tomcat-users>
+                    <role rolename="manager-gui"/>
+                    <role rolename="manager-script"/>
+                    <role rolename="manager-jmx"/>
+                    <role rolename="manager-status"/>
+                    <user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+                    <user username="deployer" password="deployer" roles="manager-script"/>
+                    <user username="tomcat" password="s3cret" roles="manager-gui"/>
+                    </tomcat-users>
+        - After the configuration is completed, we need to restart 
+        - Change directory to ```tomcat/bin``` and execute ```./shutdown.sh``` then ```./startup.sh```
+
             
 
 
